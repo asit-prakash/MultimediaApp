@@ -12,6 +12,7 @@ import {
 import CameraRoll from '@react-native-community/cameraroll';
 import Contacts from 'react-native-contacts';
 import DocumentPicker from 'react-native-document-picker';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const HomeScreen = (props) => {
   const [loadPhotos, setLoadPhotos] = useState();
@@ -151,6 +152,30 @@ const HomeScreen = (props) => {
     }
   };
 
+  const getForm = () => {
+    RNFetchBlob.config({
+      fileCache: true,
+    })
+      .fetch(
+        'GET',
+        'https://www.icicipruamc.com/docs/default-source/default-document-library/change-of-bank-form.pdf',
+        {
+          //some headers ..
+        },
+      )
+      .then((res) => {
+        const directory = RNFetchBlob.fs.dirs.DownloadDir;
+        RNFetchBlob.fs
+          .cp(res.path(), `${directory}/change-of-bank-form.pdf`)
+          .then(() => {
+            console.log('file saved');
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+  };
+
   return (
     <View>
       <Button title="Open Camera" onPress={openCamera} />
@@ -161,6 +186,7 @@ const HomeScreen = (props) => {
       <Button title="Open File Manager" onPress={openFileManager} />
       <Button title="Open Bar Code Scanner" onPress={openBarCodeReader} />
       <Button title="Open Link" onPress={openLink} />
+      <Button title="Download Form" onPress={getForm} />
 
       <View>
         <ScrollView>
