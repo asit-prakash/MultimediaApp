@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -14,8 +14,12 @@ import Contacts from 'react-native-contacts';
 import DocumentPicker from 'react-native-document-picker';
 import RNFetchBlob from 'rn-fetch-blob';
 
+import Video from 'react-native-video';
+
 const HomeScreen = (props) => {
   const [loadPhotos, setLoadPhotos] = useState();
+
+  const [showVideo, setShowVideo] = useState(false);
 
   const openCamera = async () => {
     const granted = await PermissionsAndroid.requestMultiple([
@@ -176,6 +180,16 @@ const HomeScreen = (props) => {
       });
   };
 
+  const videoPlayer = useRef(null);
+
+  const openVideo = () => {
+    setShowVideo(true);
+  };
+
+  const getCurrentPlayTime = (e) => {
+    console.log(e.currentTime);
+  };
+
   return (
     <View>
       <Button title="Open Camera" onPress={openCamera} />
@@ -187,6 +201,7 @@ const HomeScreen = (props) => {
       <Button title="Open Bar Code Scanner" onPress={openBarCodeReader} />
       <Button title="Open Link" onPress={openLink} />
       <Button title="Download Form" onPress={getForm} />
+      <Button title="Open Video" onPress={openVideo} />
 
       <View>
         <ScrollView>
@@ -203,6 +218,30 @@ const HomeScreen = (props) => {
                 />
               );
             })}
+          {showVideo && (
+            <View
+              style={{
+                flex: 1,
+                width: 500,
+                height: 400,
+                backgroundColor: 'gray',
+              }}>
+              <Video
+                source={{
+                  uri:
+                    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                }} // Can be a URL or a local file.
+                ref={videoPlayer}
+                controls={true}
+                onProgress={getCurrentPlayTime}
+                onError={(err) => {
+                  console.log(err);
+                }}
+                // onBuffer={this.onBuffer} // Callback when remote video is buffering
+                style={{flex: 1, width: 400, height: 400}}
+              />
+            </View>
+          )}
         </ScrollView>
       </View>
     </View>
